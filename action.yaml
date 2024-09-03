@@ -8,12 +8,14 @@ runs:
       uses: actions/checkout@v4
 
     - name: Configure Git
+      shell: bash
       run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
 
     - name: Fetch robots.txt
       id: fetch-robots-txt
+      shell: bash
       env:
         ACCESS_TOKEN: ${{ secrets.DARK_VISITORS_ACCESS_TOKEN }}
       run: >
@@ -33,6 +35,7 @@ runs:
     - name: Check Valid robots.txt
       env:
         ROBOTS: ${{ steps.robots.outputs.content }}
+      shell: bash
       if: ${{ !(contains(env.ROBOTS, 'User-agent:') && contains(env.ROBOTS, 'Disallow:')) }}
       run: exit 1
 
@@ -45,6 +48,7 @@ runs:
 
     - name: Commit and push robots.txt
       if: steps.verify-robots-changed.outputs.files_changed == 'true'
+      shell: bash
       run: |
         git add robots.txt
         git commit -m "Update robots.txt daily from darkvisitors API"

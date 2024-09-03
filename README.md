@@ -20,11 +20,7 @@ jobs:
 
     steps:
     - name: Dark Visitors robots.txt
-      uses: valrus/dark-visitors-robots@v1.2.0
-      with:
-        access-token: ${{ secrets.DARK_VISITORS_ACCESS_TOKEN }}
-    - name: Dark Visitors robots.txt
-      uses: valrus/dark-visitors-robots@v1.2.0
+      uses: valrus/dark-visitors-robots@v1.3.1
       with:
         access-token: ${{ secrets.DARK_VISITORS_ACCESS_TOKEN }}
 ```

@@ -1,13 +1,6 @@
 name: Dark Visitors robots.txt
 author: valrus
 description: Daily update to robots.txt from the darkvisitors.com API
-inputs:
-  cron-hour:
-    description: 'Hour (0–23) at which to update robots.txt.'
-    required: true
-  cron-minute:
-    description: 'Minute (0–59) at which to update robots.txt.'
-    required: true
 runs:
   using: "composite"
   steps:

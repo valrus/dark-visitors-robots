@@ -1,6 +1,10 @@
 name: Dark Visitors robots.txt
 author: valrus
 description: Daily update to robots.txt from the darkvisitors.com API
+inputs:
+  access-token:
+    description: 'darkvisitors.com access token'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -17,11 +21,11 @@ runs:
       id: fetch-robots-txt
       shell: bash
       env:
-        ACCESS_TOKEN: ${{ secrets.DARK_VISITORS_ACCESS_TOKEN }}
+        INPUT_ACCESS_TOKEN: ${{ inputs.access-token }}
       run: >
         curl
         -X POST https://api.darkvisitors.com/robots-txts
-        -H "Authorization: Bearer ${ACCESS_TOKEN}"
+        -H "Authorization: Bearer ${INPUT_ACCESS_TOKEN}"
         -H 'Content-Type: application/json'
         -d '{"agent_types": ["AI Data Scraper", "Undocumented AI Agent"], "disallow": "/"}'
         -o robots.txt

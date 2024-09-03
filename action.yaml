@@ -10,6 +10,52 @@ inputs:
     required: true
 runs:
   using: "composite"
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure Git
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+
+    - name: Fetch robots.txt
+      id: fetch-robots-txt
+      env:
+        ACCESS_TOKEN: ${{ secrets.DARK_VISITORS_ACCESS_TOKEN }}
+      run: >
+        curl
+        -X POST https://api.darkvisitors.com/robots-txts
+        -H "Authorization: Bearer ${ACCESS_TOKEN}"
+        -H 'Content-Type: application/json'
+        -d '{"agent_types": ["AI Data Scraper", "Undocumented AI Agent"], "disallow": "/"}'
+        -o robots.txt
+
+    - name: Read robots.txt
+      id: robots
+      uses: juliangruber/read-file-action@v1
+      with:
+        path: ./robots.txt
+    
+    - name: Check Valid robots.txt
+      env:
+        ROBOTS: ${{ steps.robots.outputs.content }}
+      if: ${{ !(contains(env.ROBOTS, 'User-agent:') && contains(env.ROBOTS, 'Disallow:')) }}
+      run: exit 1
+
+    - name: Verify Changed files
+      uses: tj-actions/verify-changed-files@v20
+      id: verify-robots-changed
+      with:
+        files: |
+           robots.txt
+
+    - name: Commit and push robots.txt
+      if: steps.verify-robots-changed.outputs.files_changed == 'true'
+      run: |
+        git add robots.txt
+        git commit -m "Update robots.txt daily from darkvisitors API"
+        git push
 branding:
   icon: 'eye-off'
   color: 'gray-dark'
